@@ -54,7 +54,7 @@ void recdir_pop(RECDIR* recdir)
 	free(top->path);
 }
 
-RECDIR* openrecdir(const char* dir_path)
+RECDIR* recdir_open(const char* dir_path)
 {
 	RECDIR* recdir = malloc(sizeof(RECDIR));
 	assert(recdir != NULL);
@@ -67,7 +67,7 @@ RECDIR* openrecdir(const char* dir_path)
 	return recdir;
 }
 
-struct dirent* readrecdir(RECDIR* recdirp)
+struct dirent* recdir_read(RECDIR* recdirp)
 {
 	while (recdirp->stack_size > 0)
 	{
@@ -108,7 +108,7 @@ struct dirent* readrecdir(RECDIR* recdirp)
 	return NULL;
 }
 
-void closerecdir(RECDIR* recdirp)
+void recdir_close(RECDIR* recdirp)
 {
 	while (recdirp->stack_size > 0)
 	{
