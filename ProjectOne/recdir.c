@@ -1,16 +1,8 @@
-﻿#pragma once
-#define _DEFAULT_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
-#include <errno.h>
 #include <assert.h>
-#define PATH_SEP "/"
-#define PATH_SEP_LEN sizeof(PATH_SEP) - 1
-#define RECDIR_STACK_CAP 1024
+#include <errno.h>
 
-typedef void(File_Action)(const char* file_path);
+#include "recdir.h"
 
 char* join_path(const char* base, const char* file)
 {
@@ -32,17 +24,11 @@ char* join_path(const char* base, const char* file)
 	return begin;
 }
 
-typedef struct
+char* recdir_path(RECDIR* recdir)
 {
-	DIR* dir;
-	char* path;
-}RECDIR_Frame;
-
-typedef struct
-{
-	RECDIR_Frame stack[RECDIR_STACK_CAP];
-	size_t stack_size;
-} RECDIR;
+	assert(recdir->stack_size > 0);
+	return recdir->stack[recdir->stack_size - 1].path;
+}
 
 int recdir_push(RECDIR* recdir, char* path)
 {
@@ -71,7 +57,7 @@ void recdir_pop(RECDIR* recdir)
 RECDIR* openrecdir(const char* dir_path)
 {
 	RECDIR* recdir = malloc(sizeof(RECDIR));
-	assert(recdir == NULL);
+	assert(recdir != NULL);
 	memset(recdir, 0, sizeof(RECDIR));
 	if (recdir_push(recdir, strdup(dir_path)) < 0)
 	{
@@ -83,19 +69,15 @@ RECDIR* openrecdir(const char* dir_path)
 
 struct dirent* readdrecdir(RECDIR* recdirp)
 {
-	errno = 0;
 	while (recdirp->stack_size > 0)
 	{
-		RECDIR_Frame *top = &recdirp->stack[recdirp->stack_size - 1];
-
-		errno = 0;
+		RECDIR_Frame* top = &recdirp->stack[recdirp->stack_size - 1];
 		struct dirent* ent = readdir(top->dir);
-
 		if (ent)
 		{
 			if (ent->d_type == DT_DIR)
 			{
-				if (strcmp(ent->d_name, ".") == 0 && strcmp(ent->d_name, "..") == 0)
+				if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
 				{
 					continue;
 				}
@@ -133,40 +115,4 @@ void closerecdir(RECDIR* recdirp)
 		recdir_pop(recdirp);
 	}
 	free(recdirp);
-}
-
-void visit_files(const char* dir_path)
-{
-	DIR* dir = opendir(dir_path);
-	if (dir == NULL)
-	{
-		fprintf(stderr, "ERROR: Could not open directory. %s: %s\n", dir_path, strerror(errno));
-		exit(1);
-	}
-	errno = 0;
-	struct dirent* ent = readdir(dir);
-	while (ent != NULL)
-	{
-		char* child_path = join_path(dir_path, ent->d_name);
-		if (ent->d_type == DT_DIR)
-		{
-			if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
-			{
-				visit_files(child_path);
-			}
-		}
-		else
-		{
-			printf("file: %s\n", child_path);
-		}
-
-		free(child_path);
-		ent = readdir(dir);
-	}
-	if (errno != 0)
-	{
-		fprintf(stderr, "ERROR: Could not read directory. %s: %s\n", dir_path, strerror(errno));
-		exit(1);
-	}
-	closedir(dir);
 }
