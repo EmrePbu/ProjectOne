@@ -51,12 +51,12 @@ int main(int argc, char const** argv)
 {
 	RECDIR* recdir = openrecdir("C:\\Users\\emrep\\Desktop\\a");
 	errno = 0;
-	struct dirent* ent = readdrecdir(recdir);
+	struct dirent* ent = readrecdir(recdir);
 
 	while (ent)
 	{
 		printf("recdir file: %s/%s\n", recdir_path(recdir), ent->d_name);
-		ent = readdrecdir(recdir);
+		ent = readrecdir(recdir);
 	}
 
 	if (errno != 0)

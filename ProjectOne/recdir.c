@@ -67,7 +67,7 @@ RECDIR* openrecdir(const char* dir_path)
 	return recdir;
 }
 
-struct dirent* readdrecdir(RECDIR* recdirp)
+struct dirent* readrecdir(RECDIR* recdirp)
 {
 	while (recdirp->stack_size > 0)
 	{

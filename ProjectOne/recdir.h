@@ -28,7 +28,7 @@ void recdir_pop(RECDIR* recdir);
 char* recdir_path(RECDIR* recdir);
 
 RECDIR* openrecdir(const char* dir_path);
-struct dirent* readdrecdir(RECDIR* recdirp);
+struct dirent* readrecdir(RECDIR* recdirp);
 void closerecdir(RECDIR* recdirp);
 
 
