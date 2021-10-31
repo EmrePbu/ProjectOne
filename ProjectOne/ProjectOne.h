@@ -1,25 +1,16 @@
-﻿// ProjectOne.h : Include file for standard system include files,
-// or project specific include files.
-
-#pragma once
-
-// TODO: Reference additional headers your program requires here.
+﻿#pragma once
 #define _DEFAULT_SOURCE
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <errno.h>
 #include <assert.h>
-
 #define PATH_SEP "/"
 #define PATH_SEP_LEN sizeof(PATH_SEP) - 1
 #define RECDIR_STACK_CAP 1024
 
-
 typedef void(File_Action)(const char* file_path);
-
 
 char* join_path(const char* base, const char* file)
 {
