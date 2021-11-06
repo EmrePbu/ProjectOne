@@ -7,8 +7,8 @@
 
 char hex_digit(unsigned int digit)
 {
-	digit %= 0x10;
-	if (digit <= 9)
+	digit = digit % 0x10;
+	if (0 <= digit && digit <= 9)
 	{
 		return digit + '0';
 	}
@@ -21,7 +21,7 @@ char hex_digit(unsigned int digit)
 
 void hash_as_cstr(BYTE hash[32], char output[32 * 2 + 1])
 {
-	for (size_t i = 0; i < sizeof(hash); i++)
+	for (size_t i = 0; i < 32; i++)
 	{
 		output[i * 2 + 0] = hex_digit(hash[i] / 0x10);
 		output[i * 2 + 1] = hex_digit(hash[i] % 0x10);
@@ -63,13 +63,29 @@ void hash_of_file(const char* file_path, BYTE hash[32])
 
 int main(int argc, char const** argv)
 {
-	RECDIR* recdir = recdir_open(".");//C:\\Users\\emrep\\Desktop\\a
+	RECDIR* recdir = recdir_open("C:\\Users\\emrep\\Desktop\\a");//C:\\Users\\emrep\\Desktop\\a
 	errno = 0;
 	struct dirent* ent = recdir_read(recdir);
-
+	//-----
+	FILE *f = fopen("file.txt", "w");
+	if (f == NULL)
+	{
+		printf("Error opening file!\n");
+		exit(1);
+	}
+	//-----
 	while (ent)
 	{
-		printf("recdir file: %s/%s\n", recdir_top(recdir)->path, ent->d_name);
+		BYTE hash[32];
+		char hash_cstr[32 * 2 + 1];
+		char* path = join_path(recdir_top(recdir)->path, ent->d_name);
+		hash_of_file(path, hash);
+		hash_as_cstr(hash, hash_cstr);
+		printf("recdir file: %s => %s\n", path, hash_cstr);
+		//fprintf(f,"recdir file: %s => %s\n", path, hash_cstr); //ProjectOne\out\build\x64-Debug\ProjectOne\file.txt
+
+		free(path);
+
 		ent = recdir_read(recdir);
 	}
 
@@ -83,5 +99,5 @@ int main(int argc, char const** argv)
 
 	return 0;
 }
-// https://youtu.be/bpCJf67e1lI?t=6000
+// https://youtu.be/bpCJf67e1lI?t=6966
 // E:\\Belgeler\\PythonProjects\\pythoncropimage\\out bu dizin de 1 milyon gorsel var
