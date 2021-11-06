@@ -7,7 +7,7 @@
 
 char hex_digit(unsigned int digit)
 {
-	digit = digit % 0x10;
+	digit %= 0x10;
 	if (0 <= digit && digit <= 9)
 	{
 		return digit + '0';
@@ -67,7 +67,7 @@ int main(int argc, char const** argv)
 	errno = 0;
 	struct dirent* ent = recdir_read(recdir);
 	//-----
-	FILE *f = fopen("file.txt", "w");
+	FILE* f = fopen("file.txt", "w");
 	if (f == NULL)
 	{
 		printf("Error opening file!\n");

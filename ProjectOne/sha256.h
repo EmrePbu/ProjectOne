@@ -17,14 +17,14 @@
 
 /**************************** DATA TYPES ****************************/
 typedef unsigned char BYTE;             // 8-bit byte
-typedef unsigned int UINT_PRIVATE_PBU;            // 32-bit word, change to "long" for 16-bit machines
+typedef unsigned int UINT_PRIVATE;            // 32-bit word, change to "long" for 16-bit machines
 // UINT_PRIVATE_PBU onceden WORD idi  ben degistirdim
 
 typedef struct {
 	BYTE data[64];
-	UINT_PRIVATE_PBU datalen;
+	UINT_PRIVATE datalen;
 	unsigned long long bitlen;
-	UINT_PRIVATE_PBU state[8];
+	UINT_PRIVATE state[8]; 
 } SHA256_CTX;
 
 /*********************** FUNCTION DECLARATIONS **********************/
