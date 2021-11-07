@@ -7,14 +7,14 @@
 
 char hex_digit(unsigned int digit)
 {
-	digit %= 0x10;
+	digit = digit % 0x10;
 	if (0 <= digit && digit <= 9)
 	{
 		return digit + '0';
 	}
 	if (10 <= digit && digit <= 15)
 	{
-		return digit + 'a';
+		return digit - 10 + 'a';
 	}
 	assert(0 && "unreachable");
 }
@@ -43,7 +43,7 @@ void hash_of_file(const char* file_path, BYTE hash[32])
 	}
 
 	BYTE buffer[1024];
-	size_t buffer_size = fread(buffer, sizeof(buffer), 1, f);
+	size_t buffer_size = fread(buffer, 1, sizeof(buffer),  f);
 	while (buffer_size > 0)
 	{
 		sha256_update(&ctx, buffer, buffer_size);
@@ -60,20 +60,19 @@ void hash_of_file(const char* file_path, BYTE hash[32])
 	sha256_final(&ctx, hash);
 }
 
-
 int main(int argc, char const** argv)
 {
-	RECDIR* recdir = recdir_open("C:\\Users\\emrep\\Desktop\\a");//C:\\Users\\emrep\\Desktop\\a
+	RECDIR* recdir = recdir_open("C:\\Users\\emrep\\Desktop\\a");
 	errno = 0;
 	struct dirent* ent = recdir_read(recdir);
-	//-----
-	FILE* f = fopen("file.txt", "w");
+	//---save file---
+	FILE* f = fopen("C:\\Users\\emrep\\Desktop\\a\\file.txt", "w");
 	if (f == NULL)
 	{
 		printf("Error opening file!\n");
 		exit(1);
 	}
-	//-----
+	//---end save file---
 	while (ent)
 	{
 		BYTE hash[32];
@@ -81,8 +80,8 @@ int main(int argc, char const** argv)
 		char* path = join_path(recdir_top(recdir)->path, ent->d_name);
 		hash_of_file(path, hash);
 		hash_as_cstr(hash, hash_cstr);
-		printf("recdir file: %s => %s\n", path, hash_cstr);
-		//fprintf(f,"recdir file: %s => %s\n", path, hash_cstr); //ProjectOne\out\build\x64-Debug\ProjectOne\file.txt
+		//printf("recdir file: %s => %s\n", path, hash_cstr);
+		fprintf(f,"%s => %s\n",  hash_cstr, path); //ProjectOne\out\build\x64-Debug\ProjectOne\file.txt
 
 		free(path);
 
@@ -94,10 +93,24 @@ int main(int argc, char const** argv)
 		fprintf(stderr, "ERROR: could not read the director: %s\n", recdir_top(recdir)->path);
 		exit(1);
 	}
-
+	//---save file---
+	fclose(f);
+	//---end save file---
 	recdir_close(recdir);
 
 	return 0;
 }
-// https://youtu.be/bpCJf67e1lI?t=6966
+// https://youtu.be/bpCJf67e1lI?t=7795
 // E:\\Belgeler\\PythonProjects\\pythoncropimage\\out bu dizin de 1 milyon gorsel var
+/*
+int main(int argc, char const** argv)
+{
+	printf("%s", argv[1]);
+}
+
+cmd > *.exe emre
+out > emre 
+
+cmd > *.exe 123
+out > 123
+*/
